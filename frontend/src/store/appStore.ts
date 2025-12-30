@@ -130,6 +130,23 @@ export const useAppStore = create<AppState>()(
         }
       },
 
+      // Legacy function name for backward compatibility
+      addToLocalCart: (item: { product_id: string; quantity: number; product?: any }) => {
+        const { cartItems } = get();
+        const existingIndex = cartItems.findIndex((ci) => ci.productId === item.product_id);
+
+        if (existingIndex >= 0) {
+          const updated = [...cartItems];
+          updated[existingIndex].quantity += item.quantity;
+          updated[existingIndex].product = item.product;
+          set({ cartItems: updated });
+        } else {
+          set({
+            cartItems: [...cartItems, { productId: item.product_id, quantity: item.quantity, product: item.product }],
+          });
+        }
+      },
+
       updateCartItem: (productId, quantity) => {
         const { cartItems } = get();
         
