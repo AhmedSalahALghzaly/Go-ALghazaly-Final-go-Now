@@ -269,6 +269,13 @@ export default function ProductBrandsAdmin() {
           )}
         </View>
       </ScrollView>
+      
+      <Toast
+        visible={toastVisible}
+        message={toastMessage}
+        type={toastType}
+        onDismiss={() => setToastVisible(false)}
+      />
     </SafeAreaView>
   );
 }
