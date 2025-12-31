@@ -62,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   // State for search, notifications, and mood switcher
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMoodSwitcher, setShowMoodSwitcher] = useState(false);
 
