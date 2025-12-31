@@ -70,30 +70,31 @@ export default function CarBrandsAdmin() {
 
   const handleSave = async () => {
     if (!name.trim() || !nameAr.trim()) {
-      setError(language === 'ar' ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill all required fields');
+      showToast(language === 'ar' ? 'يرجى إدخال الاسم بالإنجليزية والعربية' : 'Please enter name in both languages', 'error');
       return;
     }
 
     setSaving(true);
-    setError('');
-
     try {
-      await carBrandsApi.create({
+      const brandData = {
         name: name.trim(),
         name_ar: nameAr.trim(),
-        logo: logoImage || logoUrl.trim() || null,
-      });
+        logo: logoImage || undefined,
+      };
 
-      setShowSuccess(true);
-      setName('');
-      setNameAr('');
-      setLogoImage(null);
-      setLogoUrl('');
+      if (editingBrand) {
+        await carBrandsApi.update(editingBrand.id, brandData);
+        showToast(language === 'ar' ? 'تم تحديث الماركة بنجاح' : 'Brand updated successfully', 'success');
+      } else {
+        await carBrandsApi.create(brandData);
+        showToast(language === 'ar' ? 'تم إضافة الماركة بنجاح' : 'Brand created successfully', 'success');
+      }
+
       fetchBrands();
-
-      setTimeout(() => setShowSuccess(false), 2000);
-    } catch (error: any) {
-      setError(error.response?.data?.detail || 'Error saving brand');
+      resetForm();
+    } catch (error) {
+      console.error('Error saving brand:', error);
+      showToast(language === 'ar' ? 'فشل في حفظ الماركة' : 'Failed to save brand', 'error');
     } finally {
       setSaving(false);
     }
