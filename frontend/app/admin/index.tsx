@@ -25,6 +25,7 @@ interface AdminSection {
 }
 
 const ADMIN_SECTIONS: AdminSection[] = [
+  { id: 'dashboard', title: 'Dashboard', titleAr: 'لوحة الأداء', icon: 'bar-chart', route: '/admin/dashboard', color: '#10b981' },
   { id: 'marketing', title: 'Marketing Suite', titleAr: 'جناح التسويق', icon: 'megaphone', route: '/admin/marketing', color: '#e11d48' },
   { id: 'car-brands', title: 'Car Brands', titleAr: 'ماركات السيارات', icon: 'car-sport', route: '/admin/car-brands', color: '#3b82f6' },
   { id: 'models', title: 'Models', titleAr: 'الموديلات', icon: 'layers', route: '/admin/models', color: '#8b5cf6' },
