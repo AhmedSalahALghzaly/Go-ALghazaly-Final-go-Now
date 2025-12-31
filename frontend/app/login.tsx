@@ -53,18 +53,56 @@ export default function LoginScreen() {
     checkInitialUrl();
   }, []);
 
-  // Handle web auth callback
+  // Handle web auth callback - check URL on mount and on hash changes
   useEffect(() => {
     if (Platform.OS === 'web') {
-      const hash = window.location.hash;
-      if (hash && hash.includes('session_id=')) {
-        const sessionId = hash.split('session_id=')[1]?.split('&')[0];
+      const processWebAuth = () => {
+        // Check hash first
+        const hash = window.location.hash;
+        if (hash && hash.includes('session_id=')) {
+          const sessionId = hash.split('session_id=')[1]?.split('&')[0];
+          if (sessionId) {
+            console.log('Found session_id in hash:', sessionId);
+            processSessionId(sessionId);
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+          }
+        }
+        
+        // Check search params
+        const searchParams = new URLSearchParams(window.location.search);
+        const sessionId = searchParams.get('session_id');
         if (sessionId) {
+          console.log('Found session_id in query:', sessionId);
           processSessionId(sessionId);
           // Clean URL
           window.history.replaceState({}, document.title, window.location.pathname);
+          return;
         }
-      }
+        
+        // Check full URL for any session_id
+        const fullUrl = window.location.href;
+        if (fullUrl.includes('session_id=')) {
+          const match = fullUrl.match(/session_id=([^&]+)/);
+          if (match && match[1]) {
+            console.log('Found session_id in full URL:', match[1]);
+            processSessionId(match[1]);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      };
+      
+      // Process immediately
+      processWebAuth();
+      
+      // Also listen for hash changes (in case of redirects)
+      const handleHashChange = () => processWebAuth();
+      window.addEventListener('hashchange', handleHashChange);
+      
+      return () => {
+        window.removeEventListener('hashchange', handleHashChange);
+      };
     }
   }, []);
 
