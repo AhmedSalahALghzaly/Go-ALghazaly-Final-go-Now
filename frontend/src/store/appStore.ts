@@ -222,10 +222,10 @@ export const useAppStore = create<AppState>()(
       isAuthenticated: false,
       userRole: 'guest',
       _hasHydrated: false,
-      theme: 'light',
+      theme: 'dark', // Default to dark for Neon Night
       language: 'ar',
       isRTL: true,
-      currentMood: COLOR_MOODS[0], // Arctic Dawn default
+      currentMood: NEON_NIGHT_THEME, // Neon Night is the default theme
       syncStatus: 'idle',
       lastSyncTime: null,
       isOnline: true,
