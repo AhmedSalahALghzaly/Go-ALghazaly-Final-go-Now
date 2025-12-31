@@ -38,6 +38,7 @@ export default function LoginScreen() {
   // Reactive navigation - auto-redirect when authenticated
   useEffect(() => {
     if (hasHydrated && isAuthenticated) {
+      console.log('Login screen: User already authenticated, redirecting...');
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, hasHydrated]);
