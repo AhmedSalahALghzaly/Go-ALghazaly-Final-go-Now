@@ -474,42 +474,12 @@ export default function ProductsAdmin() {
               {language === 'ar' ? 'يمكنك إضافة صور متعددة للمنتج' : 'You can add multiple product images'}
             </Text>
 
-            {/* Image Previews */}
-            {images.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesPreview}>
-                {images.map((img, index) => (
-                  <View key={index} style={styles.imagePreviewContainer}>
-                    <Image source={{ uri: img }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.removeImageBtn}
-                      onPress={() => removeImage(index)}
-                    >
-                      <Ionicons name="close-circle" size={22} color="#ef4444" />
-                    </TouchableOpacity>
-                    {index === 0 && (
-                      <View style={[styles.mainImageBadge, { backgroundColor: colors.primary }]}>
-                        <Text style={styles.mainImageBadgeText}>
-                          {language === 'ar' ? 'رئيسية' : 'Main'}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </ScrollView>
-            )}
-
-            {/* Add Image Buttons */}
-            <View style={styles.imageActions}>
-              <TouchableOpacity
-                style={[styles.addImageBtn, { backgroundColor: colors.primary }]}
-                onPress={pickImage}
-              >
-                <Ionicons name="camera" size={20} color="#FFF" />
-                <Text style={styles.addImageBtnText}>
-                  {language === 'ar' ? 'اختر صورة' : 'Pick Image'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <ImageUploader
+              images={images}
+              onImagesChange={setImages}
+              maxImages={5}
+              language={language}
+            />
 
  
           </View>
