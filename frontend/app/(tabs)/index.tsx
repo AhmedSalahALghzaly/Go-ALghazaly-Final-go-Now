@@ -83,6 +83,17 @@ export default function HomeScreen() {
           console.error('Error fetching favorites:', error);
         }
       }
+
+      // Fetch active banners (promotions with type 'banner')
+      try {
+        const promosRes = await promotionApi.getAll();
+        const activeBanners = (promosRes.data || []).filter(
+          (p: any) => p.promotion_type === 'banner' && p.is_active
+        );
+        setBanners(activeBanners);
+      } catch (error) {
+        console.error('Error fetching banners:', error);
+      }
     } catch (error: any) {
       console.error('Error fetching data:', error?.message || error);
     } finally {
