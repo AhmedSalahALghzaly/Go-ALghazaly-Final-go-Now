@@ -60,13 +60,13 @@ export interface ColorMood {
 export const NEON_NIGHT_THEME: ColorMood = {
   id: 'neon_night',
   name: 'Neon Night',
-  primary: '#8B5CF6',
-  secondary: '#A78BFA',
+  primary: '#3B82F6',
+  secondary: '#60A5FA',
   background: '#0F0F23',
   surface: '#1A1A2E',
-  text: '#E5E5E5',
-  textSecondary: '#A0A0A0',
-  accent: '#EC4899',
+  text: '#60A5FA',
+  textSecondary: '#3B82F6',
+  accent: '#2563EB',
   gradient: ['#1E1E3F', '#2D2D5F', '#3D3D7F'],
 };
 
