@@ -91,31 +91,27 @@ class CartSystemTester:
             self.log_test("User Setup", False, f"Exception: {str(e)}")
             return False
 
-    def create_test_product(self):
-        """Create a test product for cart testing"""
+    def get_existing_product(self):
+        """Get an existing product for testing"""
         try:
-            product_data = {
-                "name": "Test Auto Part",
-                "name_ar": "قطعة غيار تجريبية",
-                "description": "Test product for cart system",
-                "price": 100.0,
-                "sku": f"TEST-{uuid.uuid4().hex[:8]}",
-                "stock_quantity": 50
-            }
-            
-            response = self.session.post(f"{BASE_URL}/products", json=product_data)
+            response = self.session.get(f"{BASE_URL}/products?limit=1")
             
             if response.status_code == 200:
                 data = response.json()
-                self.test_product_id = data.get("id")
-                self.log_test("Test Product Creation", True, f"Product ID: {self.test_product_id}")
-                return True
+                products = data.get("products", [])
+                if products:
+                    self.test_product_id = products[0]["id"]
+                    self.log_test("Get Test Product", True, f"Using existing product: {self.test_product_id}")
+                    return True
+                else:
+                    self.log_test("Get Test Product", False, "No products available")
+                    return False
             else:
-                self.log_test("Test Product Creation", False, f"HTTP {response.status_code}", response.text)
+                self.log_test("Get Test Product", False, f"HTTP {response.status_code}", response.text)
                 return False
                 
         except Exception as e:
-            self.log_test("Test Product Creation", False, f"Exception: {str(e)}")
+            self.log_test("Get Test Product", False, f"Exception: {str(e)}")
             return False
 
     def test_cart_get_empty(self):
