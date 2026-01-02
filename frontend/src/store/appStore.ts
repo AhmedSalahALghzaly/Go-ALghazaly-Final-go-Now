@@ -581,10 +581,19 @@ export const useCanAccessOwnerInterface = () => {
   return userRole === 'owner' || userRole === 'partner';
 };
 
-// Check if user can access admin panel
+// Check if user can access admin panel - includes all admin roles
 export const useCanAccessAdminPanel = () => {
   const userRole = useAppStore((state) => state.userRole);
-  return ['owner', 'partner', 'admin'].includes(userRole);
+  const user = useAppStore((state) => state.user);
+  const isAdmin = ['owner', 'partner', 'admin'].includes(userRole);
+  // Also check is_admin flag for backwards compatibility
+  return isAdmin || user?.is_admin === true;
+};
+
+// Check if user is specifically an admin (not owner/partner)
+export const useIsAdmin = () => {
+  const userRole = useAppStore((state) => state.userRole);
+  return userRole === 'admin';
 };
 
 export default useAppStore;
