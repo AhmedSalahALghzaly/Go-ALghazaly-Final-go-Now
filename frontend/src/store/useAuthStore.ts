@@ -1,6 +1,7 @@
 /**
  * Auth Store - Handles authentication state
  * Split from monolithic appStore for better performance
+ * Includes real-time role synchronization with backend
  */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -23,6 +24,7 @@ interface AuthState {
   isAuthenticated: boolean;
   userRole: UserRole;
   _hasHydrated: boolean;
+  lastRoleRefresh: number | null;
 
   // Actions
   setUser: (user: User | null, token?: string | null) => void;
@@ -30,6 +32,8 @@ interface AuthState {
   setUserRole: (role: UserRole) => void;
   setHasHydrated: (hydrated: boolean) => void;
   logout: () => void;
+  refreshUserFromServer: () => Promise<void>;
+  updateUserRole: (role: UserRole) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
