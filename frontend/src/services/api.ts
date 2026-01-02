@@ -66,12 +66,31 @@ export const productApi = {
   delete: (id: string) => api.delete(`/products/${id}`),
 };
 
-// Cart APIs
+// Cart APIs (Unified Server-Side Cart)
 export const cartApi = {
   get: () => api.get('/cart'),
-  add: (productId: string, quantity: number) => api.post('/cart/add', { product_id: productId, quantity }),
+  add: (productId: string, quantity: number, options?: {
+    bundle_group_id?: string;
+    bundle_offer_id?: string;
+    bundle_discount_percentage?: number;
+  }) => api.post('/cart/add', { 
+    product_id: productId, 
+    quantity,
+    ...options
+  }),
   addItem: (productId: string, quantity: number) => api.post('/cart/add', { product_id: productId, quantity }),
+  addEnhanced: (item: {
+    product_id: string;
+    quantity: number;
+    original_unit_price?: number;
+    final_unit_price?: number;
+    discount_details?: any;
+    bundle_group_id?: string;
+    added_by_admin_id?: string;
+  }) => api.post('/cart/add-enhanced', item),
   update: (productId: string, quantity: number) => api.put('/cart/update', { product_id: productId, quantity }),
+  updateItem: (productId: string, quantity: number) => api.put('/cart/update', { product_id: productId, quantity }),
+  voidBundle: (bundleGroupId: string) => api.delete(`/cart/void-bundle/${bundleGroupId}`),
   clear: () => api.delete('/cart/clear'),
 };
 
