@@ -13,7 +13,7 @@ const OWNER_EMAIL = 'pc.2025.ai@gmail.com';
 
 export default function TabLayout() {
   const { colors } = useTheme();
-  const { t, isRTL } = useTranslation();
+  const { t, isRTL, language } = useTranslation();
   const router = useRouter();
   const cartItems = useAppStore((state) => state.cartItems);
   const user = useAppStore((state) => state.user);
