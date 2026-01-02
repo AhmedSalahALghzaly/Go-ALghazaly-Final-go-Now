@@ -650,7 +650,7 @@ export default function CheckoutScreen() {
         >
           {currentStep === 0 && (
             <ReviewStep
-              cartItems={cartItems}
+              cartItems={displayCartItems}
               getTotal={getTotal}
               getOriginalTotal={getOriginalTotal}
               getTotalSavings={getTotalSavings}
