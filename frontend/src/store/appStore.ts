@@ -419,6 +419,32 @@ export const useAppStore = create<AppState>()(
 
       clearCart: () => set({ cartItems: [] }),
 
+      clearLocalCart: () => set({ cartItems: [] }),
+
+      setCartItems: (items) => {
+        // Transform server cart items to local format
+        const transformedItems = items.map((item: any) => ({
+          productId: item.product_id || item.productId,
+          product_id: item.product_id || item.productId,
+          quantity: item.quantity || 1,
+          product: item.product,
+          // Server-side pricing fields
+          original_unit_price: item.original_unit_price,
+          final_unit_price: item.final_unit_price,
+          discount_details: item.discount_details,
+          // Bundle fields
+          bundleGroupId: item.bundle_group_id || item.bundleGroupId,
+          bundle_group_id: item.bundle_group_id || item.bundleGroupId,
+          bundleOfferId: item.bundle_offer_id || item.bundleOfferId,
+          bundleOfferName: item.bundle_offer_name || item.bundleOfferName,
+          bundleDiscount: item.bundle_discount || item.bundleDiscount,
+          // Legacy fields
+          originalPrice: item.original_unit_price || item.originalPrice,
+          discountedPrice: item.final_unit_price || item.discountedPrice,
+        }));
+        set({ cartItems: transformedItems });
+      },
+
       getCartTotal: () => get().cartItems.reduce((total, item) => total + item.quantity, 0),
 
       // Void bundle discount - removes discount from all items in the bundle
