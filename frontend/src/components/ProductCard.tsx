@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAppStore } from '../store/appStore';
 import { favoritesApi } from '../services/api';
+import { AnimatedFavoriteButton, AnimatedCartButton } from './AnimatedIconButton';
 
 interface ProductCardProps {
   product: {
@@ -26,6 +27,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
   const { user } = useAppStore();
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   // Check if product is in favorites when user is logged in
   useEffect(() => {
@@ -67,6 +70,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
     }
   };
 
+  const handleAddToCart = async () => {
+    if (!onAddToCart) return;
+    
+    setCartLoading(true);
+    setAddedToCart(true);
+    
+    try {
+      await onAddToCart();
+      // Reset added state after animation
+      setTimeout(() => setAddedToCart(false), 1500);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setAddedToCart(false);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
   return (
     <TouchableOpacity
       style={[
@@ -98,45 +119,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
         
         {/* Footer with Favorites button, Price, and Add to Cart button */}
         <View style={styles.footer}>
-          {/* Favorites Button - Left */}
-          <TouchableOpacity
-            style={[
-              styles.actionButton, 
-              { 
-                backgroundColor: isFavorite ? colors.error : colors.surface,
-                borderColor: isFavorite ? colors.error : colors.border,
-                borderWidth: 1,
-              }
-            ]}
-            onPress={(e) => {
-              e.stopPropagation();
-              handleToggleFavorite();
-            }}
-            disabled={favoriteLoading}
-          >
-            <Ionicons 
-              name={isFavorite ? "heart" : "heart-outline"} 
-              size={18} 
-              color={isFavorite ? "#FFF" : colors.error} 
-            />
-          </TouchableOpacity>
+          {/* Animated Favorites Button - Left */}
+          <AnimatedFavoriteButton
+            isFavorite={isFavorite}
+            isLoading={favoriteLoading}
+            onPress={handleToggleFavorite}
+            size={18}
+            style={styles.iconButton}
+          />
           
           {/* Price - Center */}
           <Text style={[styles.price, { color: colors.primary }]}>
             {formatPrice(product.price)}
           </Text>
           
-          {/* Add to Cart Button - Right */}
+          {/* Animated Add to Cart Button - Right */}
           {onAddToCart && (
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: colors.primary }]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onAddToCart();
-              }}
-            >
-              <Ionicons name="add" size={18} color="#FFF" />
-            </TouchableOpacity>
+            <AnimatedCartButton
+              isInCart={addedToCart}
+              isLoading={cartLoading}
+              onPress={handleAddToCart}
+              size={18}
+              primaryColor={colors.primary}
+              style={styles.iconButton}
+            />
           )}
         </View>
       </View>
@@ -181,11 +187,9 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
   },
-  actionButton: {
+  iconButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
