@@ -2064,6 +2064,45 @@ async def create_admin_order(data: AdminOrderCreate, request: Request):
     
     return serialize_doc(order_doc)
 
+@api_router.get("/admin/orders/{order_id}")
+async def get_admin_order_detail(order_id: str, request: Request):
+    """Get order details for admin view"""
+    user = await get_current_user(request)
+    role = await get_user_role(user) if user else "guest"
+    if role not in ["owner", "partner", "admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    order = await db.orders.find_one({"_id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Enrich items with product details if not present
+    enriched_items = []
+    for item in order.get("items", []):
+        if not item.get("image_url"):
+            product = await db.products.find_one({"_id": item.get("product_id")})
+            if product:
+                item["image_url"] = product.get("image_url")
+                item["product_name"] = item.get("product_name") or product.get("name")
+                item["product_name_ar"] = item.get("product_name_ar") or product.get("name_ar")
+        enriched_items.append(item)
+    
+    order["items"] = enriched_items
+    
+    # Add delivery_address structure if needed
+    if "delivery_address" not in order and order.get("shipping_address"):
+        parts = order.get("shipping_address", "").split(", ")
+        order["delivery_address"] = {
+            "street_address": parts[0] if len(parts) > 0 else "",
+            "city": parts[1] if len(parts) > 1 else "",
+            "state": parts[2] if len(parts) > 2 else "",
+            "country": parts[3] if len(parts) > 3 else "Egypt",
+            "delivery_instructions": order.get("delivery_instructions", "")
+        }
+    
+    return serialize_doc(order)
+
+
 @api_router.delete("/orders/{order_id}")
 async def delete_order(order_id: str, request: Request):
     """Delete an order (admin only)"""
