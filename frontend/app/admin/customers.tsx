@@ -372,13 +372,16 @@ const styles = StyleSheet.create({
   customerEmail: { fontSize: 12, flex: 1 },
   customerPhone: { fontSize: 12 },
   customerDate: { fontSize: 11, marginTop: 4 },
-  actionIcons: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', maxWidth: 180, justifyContent: 'flex-end' },
+  actionIcons: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', maxWidth: 200, justifyContent: 'flex-end' },
   iconBtn: { 
     width: 32, 
     height: 32, 
     borderRadius: 16, 
     alignItems: 'center', 
     justifyContent: 'center' 
+  },
+  statusIndicatorWrapper: {
+    marginRight: 4,
   },
   orderIndicator: { 
     width: 28, 
