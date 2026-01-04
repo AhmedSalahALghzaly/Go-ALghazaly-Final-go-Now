@@ -638,20 +638,28 @@ export default function ProductDetailScreen() {
   );
 }
 
-// Professional Animated Add to Cart Component
+// Professional Animated Add to Cart Component with Quantity Selector
 const AnimatedAddToCartBar: React.FC<{
   onPress: () => void;
   isLoading: boolean;
   price: number;
+  quantity: number;
+  onQuantityChange: (qty: number) => void;
   label: string;
   colors: any;
   language: string;
-}> = ({ onPress, isLoading, price, label, colors, language }) => {
+  isRTL: boolean;
+}> = ({ onPress, isLoading, price, quantity, onQuantityChange, label, colors, language, isRTL }) => {
   const scale = useSharedValue(1);
   const iconRotate = useSharedValue(0);
   const shimmerX = useSharedValue(-200);
   const successScale = useSharedValue(0);
+  const priceScale = useSharedValue(1);
+  const quantityScale = useSharedValue(1);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Calculate total price
+  const totalPrice = price * quantity;
 
   // Start shimmer animation on mount
   useEffect(() => {
@@ -691,6 +699,42 @@ const AnimatedAddToCartBar: React.FC<{
     onPress();
   };
 
+  const handleIncrease = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onQuantityChange(quantity + 1);
+    
+    // Animate quantity badge
+    quantityScale.value = withSequence(
+      withSpring(1.3, { damping: 5, stiffness: 300 }),
+      withSpring(1, { damping: 5, stiffness: 300 })
+    );
+    
+    // Animate price
+    priceScale.value = withSequence(
+      withTiming(1.1, { duration: 100 }),
+      withSpring(1, { damping: 5, stiffness: 300 })
+    );
+  };
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onQuantityChange(quantity - 1);
+      
+      // Animate quantity badge
+      quantityScale.value = withSequence(
+        withSpring(0.7, { damping: 5, stiffness: 300 }),
+        withSpring(1, { damping: 5, stiffness: 300 })
+      );
+      
+      // Animate price
+      priceScale.value = withSequence(
+        withTiming(0.9, { duration: 100 }),
+        withSpring(1, { damping: 5, stiffness: 300 })
+      );
+    }
+  };
+
   // Show success animation after loading completes
   useEffect(() => {
     if (!isLoading && showSuccess) {
@@ -714,6 +758,14 @@ const AnimatedAddToCartBar: React.FC<{
     transform: [{ translateX: shimmerX.value }],
   }));
 
+  const priceAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: priceScale.value }],
+  }));
+
+  const quantityAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: quantityScale.value }],
+  }));
+
   const successStyle = useAnimatedStyle(() => ({
     transform: [{ scale: successScale.value }],
     opacity: interpolate(successScale.value, [0, 0.5, 1], [0, 1, 1], Extrapolation.CLAMP),
@@ -724,17 +776,51 @@ const AnimatedAddToCartBar: React.FC<{
       addToCartStyles.container, 
       { backgroundColor: colors.card, borderTopColor: colors.border }
     ]}>
-      {/* Price display */}
-      <View style={addToCartStyles.priceSection}>
-        <Text style={[addToCartStyles.priceLabel, { color: colors.textSecondary }]}>
-          {language === 'ar' ? 'السعر' : 'Price'}
-        </Text>
-        <Text style={[addToCartStyles.priceValue, { color: colors.text }]}>
-          {price?.toFixed(2)} <Text style={addToCartStyles.currency}>{language === 'ar' ? 'ج.م' : 'EGP'}</Text>
-        </Text>
+      {/* Left Side - Quantity Selector */}
+      <View style={[addToCartStyles.quantitySection, isRTL && addToCartStyles.quantitySectionRTL]}>
+        <TouchableOpacity
+          onPress={handleDecrease}
+          style={[
+            addToCartStyles.qtyButton,
+            { 
+              backgroundColor: quantity > 1 ? colors.primary + '20' : colors.surface,
+              borderColor: quantity > 1 ? colors.primary : colors.border,
+            },
+          ]}
+          disabled={quantity <= 1}
+        >
+          <Ionicons name="remove" size={18} color={quantity > 1 ? colors.primary : colors.textSecondary} />
+        </TouchableOpacity>
+        
+        <Animated.View style={[addToCartStyles.qtyBadge, { backgroundColor: colors.primary }, quantityAnimStyle]}>
+          <Text style={addToCartStyles.qtyText}>{quantity}</Text>
+        </Animated.View>
+        
+        <TouchableOpacity
+          onPress={handleIncrease}
+          style={[
+            addToCartStyles.qtyButton,
+            { 
+              backgroundColor: colors.primary + '20',
+              borderColor: colors.primary,
+            },
+          ]}
+        >
+          <Ionicons name="add" size={18} color={colors.primary} />
+        </TouchableOpacity>
       </View>
 
-      {/* Animated Button */}
+      {/* Center - Dynamic Price */}
+      <View style={addToCartStyles.priceSection}>
+        <Text style={[addToCartStyles.priceLabel, { color: colors.textSecondary }]}>
+          {language === 'ar' ? 'الإجمالي' : 'Total'}
+        </Text>
+        <Animated.Text style={[addToCartStyles.priceValue, { color: colors.text }, priceAnimStyle]}>
+          {totalPrice?.toFixed(2)} <Text style={addToCartStyles.currency}>{language === 'ar' ? 'ج.م' : 'EGP'}</Text>
+        </Animated.Text>
+      </View>
+
+      {/* Right - Add to Cart Button */}
       <Animated.View style={[addToCartStyles.buttonWrapper, containerStyle]}>
         <TouchableOpacity
           style={addToCartStyles.button}
@@ -761,18 +847,14 @@ const AnimatedAddToCartBar: React.FC<{
             {isLoading ? (
               <View style={addToCartStyles.loadingContainer}>
                 <ActivityIndicator size="small" color="#FFF" />
-                <Text style={addToCartStyles.buttonText}>
-                  {language === 'ar' ? 'جاري الإضافة...' : 'Adding...'}
-                </Text>
               </View>
             ) : (
               <View style={addToCartStyles.buttonContent}>
                 <Animated.View style={iconStyle}>
-                  <Ionicons name="cart" size={22} color="#FFF" />
+                  <Ionicons name="cart" size={20} color="#FFF" />
                 </Animated.View>
-                <Text style={addToCartStyles.buttonText}>{label}</Text>
                 <View style={addToCartStyles.plusBadge}>
-                  <Ionicons name="add" size={14} color="#FFF" />
+                  <Ionicons name="add" size={12} color="#FFF" />
                 </View>
               </View>
             )}
