@@ -31,12 +31,12 @@ export default function OrderDetailAdmin() {
   const isOwner = useIsOwner();
   const isAdmin = useCanAccessAdminPanel();
 
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [discountInput, setDiscountInput] = useState('');
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [discountApplied, setDiscountApplied] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
