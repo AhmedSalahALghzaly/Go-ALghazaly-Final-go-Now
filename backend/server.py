@@ -2127,6 +2127,44 @@ async def get_admin_order_detail(order_id: str, request: Request):
     return serialize_doc(order)
 
 
+@api_router.patch("/orders/{order_id}/discount")
+async def update_order_discount(order_id: str, request: Request):
+    """Update order discount (OWNER ONLY)"""
+    user = await get_current_user(request)
+    role = await get_user_role(user) if user else "guest"
+    
+    # Only owner can modify discounts
+    if role != "owner":
+        raise HTTPException(status_code=403, detail="Only owner can modify discounts")
+    
+    body = await request.json()
+    discount = body.get("discount", 0)
+    
+    if discount < 0:
+        raise HTTPException(status_code=400, detail="Discount cannot be negative")
+    
+    order = await db.orders.find_one({"_id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Calculate new total
+    subtotal = order.get("subtotal", 0)
+    shipping = order.get("shipping_cost", 150)
+    new_total = subtotal + shipping - discount
+    
+    await db.orders.update_one(
+        {"_id": order_id},
+        {"$set": {
+            "discount": discount,
+            "total": new_total,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    await manager.broadcast({"type": "sync", "tables": ["orders"]})
+    return {"message": "Discount updated", "discount": discount, "total": new_total}
+
+
 @api_router.delete("/orders/{order_id}")
 async def delete_order(order_id: str, request: Request):
     """Delete an order (OWNER ONLY - hard delete)"""
