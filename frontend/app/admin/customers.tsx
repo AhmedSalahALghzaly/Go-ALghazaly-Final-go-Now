@@ -68,12 +68,16 @@ export default function CustomersAdmin() {
       const statusMap = {};
       
       for (const customer of customersList) {
+        // Use customer.id as the user_id (backend returns 'id' from serialize_doc)
+        const userId = customer.id;
+        if (!userId) continue;
+        
         try {
-          const countRes = await ordersApi.getPendingCount(customer.user_id);
-          counts[customer.user_id] = countRes.data?.count || 0;
+          const countRes = await ordersApi.getPendingCount(userId);
+          counts[userId] = countRes.data?.count || 0;
           
           // Also fetch order status info
-          const ordersRes = await api.get(`/admin/customer/${customer.user_id}/orders`);
+          const ordersRes = await api.get(`/admin/customer/${userId}/orders`);
           const orders = ordersRes.data?.orders || [];
           
           const activeStatuses = ['pending', 'confirmed', 'preparing', 'shipped', 'out_for_delivery'];
@@ -83,20 +87,20 @@ export default function CustomersAdmin() {
             activeOrders.sort((a, b) => 
               new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
-            statusMap[customer.user_id] = {
+            statusMap[userId] = {
               status: activeOrders[0].status,
               activeCount: activeOrders.length,
             };
           } else {
             const latestOrder = orders[0];
-            statusMap[customer.user_id] = {
+            statusMap[userId] = {
               status: latestOrder?.status || 'no_active_order',
               activeCount: 0,
             };
           }
         } catch (e) {
-          counts[customer.user_id] = 0;
-          statusMap[customer.user_id] = { status: 'no_active_order', activeCount: 0 };
+          counts[userId] = 0;
+          statusMap[userId] = { status: 'no_active_order', activeCount: 0 };
         }
       }
       setPendingOrderCounts(counts);
