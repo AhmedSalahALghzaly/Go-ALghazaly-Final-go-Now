@@ -137,14 +137,15 @@ export default function TabLayout() {
             tabBarStyle: {
               backgroundColor: colors.tabBar,
               borderTopColor: colors.border,
+              borderTopWidth: 1,
               height: Platform.OS === 'ios' ? 88 : 64,
-              paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+              paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
               paddingTop: 8,
             },
             tabBarActiveTintColor: colors.tabBarActive,
             tabBarInactiveTintColor: colors.tabBarInactive,
             tabBarLabelStyle: {
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: '600',
             },
           }}
@@ -153,8 +154,8 @@ export default function TabLayout() {
             name="index"
             options={{
               title: t('home'),
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home" size={size} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
               ),
             }}
           />
@@ -162,33 +163,17 @@ export default function TabLayout() {
             name="categories"
             options={{
               title: t('categories'),
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="grid" size={size} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? "grid" : "grid-outline"} size={24} color={color} />
               ),
             }}
           />
-          {/* Center spacer for Admin/Owner button - only when showCenterButton */}
-          {showCenterButton && (
-            <Tabs.Screen
-              name="owner-placeholder"
-              options={{
-                title: '',
-                tabBarIcon: () => <View style={{ width: 50 }} />,
-                tabBarButton: () => <View style={{ width: 60 }} />,
-              }}
-              listeners={{
-                tabPress: (e) => {
-                  e.preventDefault();
-                },
-              }}
-            />
-          )}
           <Tabs.Screen
             name="cart"
             options={{
-              title: language === 'ar' ? 'حسابي' : 'My Hub',
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="bag-handle" size={size} color={color} />
+              title: t('cart'),
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? "cart" : "cart-outline"} size={24} color={color} />
               ),
               tabBarBadge: cartCount > 0 ? cartCount : undefined,
               tabBarBadgeStyle: {
@@ -197,25 +182,16 @@ export default function TabLayout() {
               },
             }}
           />
-          {/* Search Tab - Opens Bottom Sheet instead of navigating */}
           <Tabs.Screen
             name="profile"
             options={{
-              title: language === 'ar' ? 'بحث' : 'Search',
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="search" size={size} color={color} />
+              title: t('profile'),
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />
               ),
-              tabBarButton: SearchTabButton,
             }}
           />
         </Tabs>
-        
-        {/* Admin/Owner Access Center Button - Floating above tab bar */}
-        {showCenterButton && (
-          <View style={styles.ownerButtonContainer}>
-            <CenterAccessButton />
-          </View>
-        )}
       </View>
 
       {/* Advanced Search Bottom Sheet - Outside Tabs to avoid expo-router warning */}
@@ -228,6 +204,7 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  // Keep styles for any future use
   ownerButtonContainer: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 45 : 25,
