@@ -709,6 +709,9 @@ export default function OwnerDashboard() {
           </View>
         </View>
       </Modal>
+
+      {/* Confetti Effect for successful partner addition */}
+      <ConfettiEffect active={showConfetti} onComplete={() => setShowConfetti(false)} />
     </View>
   );
 }
