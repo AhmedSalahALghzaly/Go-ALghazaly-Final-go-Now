@@ -160,15 +160,15 @@ export default function OwnerDashboard() {
     } finally {
       setLoadingPartners(false);
     }
-  };
+  }, [fetchPartners]);
 
   const handleIconPress = (route: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    haptic.tap();
     router.push(route as any);
   };
 
   const handleMetricPress = (metricType: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    haptic.select();
     
     switch (metricType) {
       case 'todayOrders':
