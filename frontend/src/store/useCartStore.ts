@@ -121,19 +121,15 @@ export const useCartStore = create<CartState>()(
         const { cartItems } = get();
         const itemToRemove = cartItems.find((item) => item.productId === productId);
 
+        // CRITICAL: If removing an item that belongs to a bundle, 
+        // void ALL discounts for remaining items in that bundle
         if (itemToRemove?.bundleGroupId && voidBundle) {
-          // Get all items in this bundle group
-          const bundleItems = cartItems.filter(
-            (item) => item.bundleGroupId === itemToRemove.bundleGroupId
-          );
-          
-          // If removing this item leaves less than 2 items in the bundle,
-          // void the bundle discount for all remaining items
-          if (bundleItems.length <= 2) {
-            get().voidBundleDiscount(itemToRemove.bundleGroupId);
-          }
+          // Always void the bundle discount when removing any bundle item
+          // because the bundle is no longer complete
+          get().voidBundleDiscount(itemToRemove.bundleGroupId);
         }
 
+        // Remove the item from cart
         set({ cartItems: cartItems.filter((item) => item.productId !== productId) });
       },
 
