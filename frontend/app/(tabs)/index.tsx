@@ -357,26 +357,13 @@ export default function HomeScreen() {
             {carBrands.map((brand) => {
               const brandModels = carModels.filter((m) => m.brand_id === brand.id);
               return (
-                <TouchableOpacity
+                <AnimatedBrandCard
                   key={brand.id}
-                  style={[
-                    styles.brandCard,
-                    { backgroundColor: colors.card, borderColor: colors.border },
-                  ]}
+                  brand={brand}
+                  type="car"
+                  modelsCount={brandModels.length}
                   onPress={() => router.push(`/brand/${brand.id}`)}
-                >
-                  <View style={[styles.brandIcon, { backgroundColor: colors.primary + '15' }]}>
-                    <Ionicons name="car-sport" size={28} color={colors.primary} />
-                  </View>
-                  <Text style={[styles.brandName, { color: colors.text }]}>
-                    {getName(brand)}
-                  </Text>
-                  {brandModels.length > 0 && (
-                    <Text style={[styles.brandModelsCount, { color: colors.textSecondary }]}>
-                      {brandModels.length} {language === 'ar' ? 'موديل' : 'models'}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+                />
               );
             })}
           </ScrollView>
