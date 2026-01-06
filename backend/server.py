@@ -2575,6 +2575,14 @@ async def startup_db_client():
         logger.info("Seeding database...")
         await seed_database()
         logger.info("Database seeded successfully")
+    
+    # Seed promotions and bundle offers if needed (may need to seed separately)
+    existing_promotions = await db.promotions.count_documents({})
+    existing_bundles = await db.bundle_offers.count_documents({})
+    if existing_promotions == 0 or existing_bundles == 0:
+        logger.info("Seeding marketing data...")
+        await seed_marketing_data()
+        logger.info("Marketing data seeded successfully")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
