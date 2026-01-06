@@ -109,7 +109,7 @@ export default function ProductsAdmin() {
     setError('');
 
     try {
-      await productsApi.create({
+      const productData = {
         name: name.trim(),
         name_ar: nameAr.trim(),
         description: description.trim() || null,
@@ -122,29 +122,62 @@ export default function ProductsAdmin() {
         category_id: selectedCategoryId,
         car_model_ids: selectedCarModelIds,
         stock_quantity: parseInt(stockQuantity) || 0,
-      });
+      };
+
+      if (isEditMode && editingProduct) {
+        // Update existing product
+        await productsApi.update(editingProduct.id, productData);
+      } else {
+        // Create new product
+        await productsApi.create(productData);
+      }
 
       setShowSuccess(true);
-      // Reset form
-      setName('');
-      setNameAr('');
-      setDescription('');
-      setDescriptionAr('');
-      setPrice('');
-      setSku('');
-      setStockQuantity('0');
-      setImages([]);
-      setSelectedBrandId('');
-      setSelectedCategoryId('');
-      setSelectedCarModelIds([]);
+      resetForm();
       fetchData();
 
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error: any) {
-      setError(error.response?.data?.detail || 'Error saving product');
+      setError(error.response?.data?.detail || (isEditMode ? 'Error updating product' : 'Error saving product'));
     } finally {
       setSaving(false);
     }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setNameAr('');
+    setDescription('');
+    setDescriptionAr('');
+    setPrice('');
+    setSku('');
+    setStockQuantity('0');
+    setImages([]);
+    setSelectedBrandId('');
+    setSelectedCategoryId('');
+    setSelectedCarModelIds([]);
+    setIsEditMode(false);
+    setEditingProduct(null);
+  };
+
+  const handleEditProduct = (product: any) => {
+    // Populate form with product data
+    setName(product.name || '');
+    setNameAr(product.name_ar || '');
+    setDescription(product.description || '');
+    setDescriptionAr(product.description_ar || '');
+    setPrice(product.price?.toString() || '');
+    setSku(product.sku || '');
+    setStockQuantity((product.stock_quantity || product.stock || 0).toString());
+    setImages(product.images || (product.image_url ? [product.image_url] : []));
+    setSelectedBrandId(product.product_brand_id || '');
+    setSelectedCategoryId(product.category_id || '');
+    setSelectedCarModelIds(product.car_model_ids || []);
+    setEditingProduct(product);
+    setIsEditMode(true);
+    
+    // Scroll to form (optional visual feedback)
+    setError('');
   };
 
   const openDeleteConfirm = (product: any) => {
