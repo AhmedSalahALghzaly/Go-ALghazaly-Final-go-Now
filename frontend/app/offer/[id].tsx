@@ -233,11 +233,26 @@ export default function OfferDetailsScreen() {
 
     setAddingToCart(true);
     try {
+      // إضافة منتج واحد مع معلومات الخصم
+      const originalPrice = product.price || 0;
+      const discountedPrice = originalPrice * (1 - discount / 100);
+      
+      addToCart({
+        productId: product.id,
+        quantity: 1,
+        product: product,
+        bundleOfferId: offer?.id,
+        bundleOfferName: offer?.name,
+        bundleDiscount: discount,
+        originalPrice: originalPrice,
+        discountedPrice: discountedPrice,
+      });
+      
       await cartApi.add(product.id, 1, {
         bundle_offer_id: offer?.id,
         bundle_discount_percentage: discount,
       });
-      addToLocalCart({ product_id: product.id, quantity: 1, product });
+      
       setAddedProducts(prev => new Set(prev).add(product.id));
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -246,26 +261,36 @@ export default function OfferDetailsScreen() {
     }
   };
 
+  /**
+   * Bug Fix #1: استخدام addBundleToCart لإضافة كل منتجات العرض المجمع
+   * هذا يضمن ربط جميع المنتجات بنفس bundleGroupId وحساب الخصومات الصحيحة
+   */
   const handleAddAllToCart = async () => {
     if (!user) {
       router.push('/login');
       return;
     }
 
+    if (!offer || products.length === 0) return;
+
     setAddingToCart(true);
     try {
-      const bundleGroupId = `bundle_${offer?.id}_${Date.now()}`;
-      for (const product of products) {
-        await cartApi.add(product.id, 1, {
-          bundle_group_id: bundleGroupId,
-          bundle_offer_id: offer?.id,
-          bundle_discount_percentage: discount,
-        });
-        addToLocalCart({ product_id: product.id, quantity: 1, product });
-      }
+      // استخدام الدالة الصحيحة التي تضيف كل المنتجات مع bundleGroupId موحد
+      await addBundleToCart(
+        {
+          id: offer.id,
+          name: offer.name,
+          name_ar: offer.name_ar,
+          discount_percentage: discount,
+          product_ids: offer.product_ids,
+          products: products,
+        },
+        products
+      );
+      
       setAddedProducts(new Set(products.map(p => p.id)));
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error('Error adding bundle to cart:', error);
     } finally {
       setAddingToCart(false);
     }
