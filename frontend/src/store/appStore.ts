@@ -555,6 +555,11 @@ export const useAppStore = create<AppState>()(
         }
         if (state) {
           state.setHasHydrated(true);
+          // تهيئة الـ API token من الـ session المحفوظ
+          if (state.sessionToken) {
+            setApiAuthToken(state.sessionToken);
+            console.log('Session token restored from storage');
+          }
         }
       },
     }
