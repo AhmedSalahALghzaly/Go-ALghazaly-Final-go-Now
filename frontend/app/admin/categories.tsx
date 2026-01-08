@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
   emptyText: { textAlign: 'center', padding: 20 },
   listItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1 },
   categoryIcon: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  categoryImage: { width: 40, height: 40, borderRadius: 8 },
   categoryInfo: { flex: 1, marginLeft: 12 },
   categoryName: { fontSize: 16, fontWeight: '600' },
   categoryMeta: { fontSize: 13, marginTop: 2 },
