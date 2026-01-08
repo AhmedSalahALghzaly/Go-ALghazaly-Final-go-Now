@@ -248,10 +248,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         {/* Product Details Section */}
         {showDetails && (
           <View style={styles.detailsContainer}>
+            {/* Brand Name */}
+            {getBrandName() && (
+              <View style={[styles.detailRow, isRTL && styles.detailRowRTL]}>
+                <Ionicons name="pricetag-outline" size={11} color={colors.primary} />
+                <Text style={[styles.detailText, styles.brandText, { color: colors.primary }]} numberOfLines={1}>
+                  {getBrandName()}
+                </Text>
+              </View>
+            )}
+            
             {/* SKU */}
             {product.sku && (
               <View style={[styles.detailRow, isRTL && styles.detailRowRTL]}>
-                <Ionicons name="barcode-outline" size={10} color={colors.textSecondary} />
+                <Ionicons name="barcode-outline" size={11} color={colors.textSecondary} />
                 <Text style={[styles.detailText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {product.sku}
                 </Text>
@@ -261,7 +271,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             {/* Country of Origin */}
             {getCountry() && (
               <View style={[styles.detailRow, isRTL && styles.detailRowRTL]}>
-                <Ionicons name="globe-outline" size={10} color={colors.textSecondary} />
+                <Ionicons name="globe-outline" size={11} color={colors.textSecondary} />
                 <Text style={[styles.detailText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {getCountry()}
                 </Text>
@@ -271,13 +281,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             {/* Compatible Car Model */}
             {getCarModelName() && (
               <View style={[styles.detailRow, isRTL && styles.detailRowRTL]}>
-                <Ionicons name="car-sport-outline" size={10} color={colors.primary} />
-                <Text style={[styles.detailText, { color: colors.primary }]} numberOfLines={1}>
+                <Ionicons name="car-sport-outline" size={11} color={colors.success || '#10B981'} />
+                <Text style={[styles.detailText, { color: colors.success || '#10B981' }]} numberOfLines={1}>
                   {getCarModelName()}
                   {product.compatible_car_models_count && product.compatible_car_models_count > 1 && (
-                    <Text style={{ color: colors.textSecondary }}>
-                      {' '}+{product.compatible_car_models_count - 1}
-                    </Text>
+                    ` +${product.compatible_car_models_count - 1}`
                   )}
                 </Text>
               </View>
