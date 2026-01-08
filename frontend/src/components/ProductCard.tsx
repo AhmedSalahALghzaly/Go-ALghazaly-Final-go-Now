@@ -217,7 +217,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
       onPress={() => router.push(`/product/${product.id}`)}
       activeOpacity={0.7}
     >
-      {/* Image Container with Brand Badge */}
+      {/* Image Container */}
       <View style={[styles.imageContainer, { backgroundColor: colors.surface }]}>
         {product.image_url ? (
           <Image
@@ -227,15 +227,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
           />
         ) : (
           <Ionicons name="cube-outline" size={48} color={colors.textSecondary} />
-        )}
-        
-        {/* Brand Badge Overlay */}
-        {showDetails && getBrandName() && (
-          <View style={[styles.brandBadge, { backgroundColor: colors.primary + 'E6' }]}>
-            <Text style={styles.brandBadgeText} numberOfLines={1}>
-              {getBrandName()}
-            </Text>
-          </View>
         )}
       </View>
       
