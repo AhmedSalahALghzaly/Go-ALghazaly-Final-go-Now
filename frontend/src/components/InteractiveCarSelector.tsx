@@ -84,9 +84,9 @@ export const InteractiveCarSelector: React.FC = () => {
   const router = useRouter();
   const mood = useColorMood();
 
-  // Get data from store
-  const carBrands = useAppStore((state) => state.carBrands);
-  const carModels = useAppStore((state) => state.carModels);
+  // Get data from store with memoized selectors
+  const carBrands = useAppStore(useCallback((state) => state.carBrands, []));
+  const carModels = useAppStore(useCallback((state) => state.carModels, []));
 
   // Local state
   const [selectorState, setSelectorState] = useState<SelectorState>('collapsed');
