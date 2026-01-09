@@ -133,71 +133,80 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ visible, onClose }) 
     const accessLevel = getUserAccessLevel;
 
     // === PRODUCTS (Available to ALL users) ===
-    products.forEach((p: any) => {
-      const name = language === 'ar' ? (p.name_ar || p.name) : p.name;
-      if (fuzzyMatch(name || '', query) || fuzzyMatch(p.sku || '', query)) {
-        allResults.push({
-          id: p.id,
-          type: 'product',
-          title: name || p.name,
-          subtitle: `SKU: ${p.sku || 'N/A'} • ${p.price || 0} ج.م`,
-          icon: 'cube',
-          color: '#3B82F6',
-          route: `/product/${p.id}`,
-        });
-      }
-    });
+    if (Array.isArray(products)) {
+      products.forEach((p: any) => {
+        const name = language === 'ar' ? (p.name_ar || p.name) : p.name;
+        if (fuzzyMatch(name || '', query) || fuzzyMatch(p.sku || '', query)) {
+          allResults.push({
+            id: p.id,
+            type: 'product',
+            title: name || p.name,
+            subtitle: `SKU: ${p.sku || 'N/A'} • ${p.price || 0} ج.م`,
+            icon: 'cube',
+            color: '#3B82F6',
+            route: `/product/${p.id}`,
+          });
+        }
+      });
+    }
 
     // === CAR BRANDS (Available to ALL users) ===
-    carBrands.forEach((b: any) => {
-      const name = language === 'ar' ? (b.name_ar || b.name) : b.name;
-      if (fuzzyMatch(name || '', query)) {
-        allResults.push({
-          id: b.id,
-          type: 'brand',
-          title: name || b.name,
-          subtitle: language === 'ar' ? 'ماركة سيارة' : 'Car Brand',
-          icon: 'car-sport',
-          color: '#F59E0B',
-          route: `/brand/${b.id}`,
-        });
-      }
-    });
+    if (Array.isArray(carBrands)) {
+      carBrands.forEach((b: any) => {
+        const name = language === 'ar' ? (b.name_ar || b.name) : b.name;
+        if (fuzzyMatch(name || '', query)) {
+          allResults.push({
+            id: b.id,
+            type: 'brand',
+            title: name || b.name,
+            subtitle: language === 'ar' ? 'ماركة سيارة' : 'Car Brand',
+            icon: 'car-sport',
+            color: '#F59E0B',
+            route: `/brand/${b.id}`,
+          });
+        }
+      });
+    }
 
     // === CAR MODELS (Available to ALL users) ===
-    carModels.forEach((m: any) => {
-      const name = language === 'ar' ? (m.name_ar || m.name) : m.name;
-      if (fuzzyMatch(name || '', query)) {
-        allResults.push({
-          id: m.id,
-          type: 'model',
-          title: name || m.name,
-          subtitle: m.year_start && m.year_end ? `${m.year_start} - ${m.year_end}` : '',
-          icon: 'car',
-          color: '#8B5CF6',
-          route: `/car/${m.id}`,
-        });
-      }
-    });
+    if (Array.isArray(carModels)) {
+      carModels.forEach((m: any) => {
+        const name = language === 'ar' ? (m.name_ar || m.name) : m.name;
+        if (fuzzyMatch(name || '', query)) {
+          allResults.push({
+            id: m.id,
+            type: 'model',
+            title: name || m.name,
+            subtitle: m.year_start && m.year_end ? `${m.year_start} - ${m.year_end}` : '',
+            icon: 'car',
+            color: '#8B5CF6',
+            route: `/car/${m.id}`,
+          });
+        }
+      });
+    }
 
     // === PRODUCT BRANDS (Available to ALL users) ===
-    productBrands.forEach((b: any) => {
-      const name = language === 'ar' ? (b.name_ar || b.name) : b.name;
-      if (fuzzyMatch(name || '', query)) {
-        allResults.push({
-          id: b.id,
-          type: 'brand',
-          title: name || b.name,
-          subtitle: language === 'ar' ? 'علامة منتج' : 'Product Brand',
-          icon: 'pricetag',
-          color: '#06B6D4',
-        });
-      }
-    });
+    if (Array.isArray(productBrands)) {
+      productBrands.forEach((b: any) => {
+        const name = language === 'ar' ? (b.name_ar || b.name) : b.name;
+        if (fuzzyMatch(name || '', query)) {
+          allResults.push({
+            id: b.id,
+            type: 'brand',
+            title: name || b.name,
+            subtitle: language === 'ar' ? 'علامة منتج' : 'Product Brand',
+            icon: 'pricetag',
+            color: '#06B6D4',
+          });
+        }
+      });
+    }
 
     // === SUPPLIERS & DISTRIBUTORS (Subscriber, Admin, Owner only) ===
     if (['subscriber', 'admin', 'owner'].includes(accessLevel)) {
-      suppliers.forEach((s: any) => {
+      if (Array.isArray(suppliers)) {
+        suppliers.forEach((s: any) => {
         if (fuzzyMatch(s.name || '', query) || fuzzyMatch(s.contact_email || '', query)) {
           allResults.push({
             id: s.id,
