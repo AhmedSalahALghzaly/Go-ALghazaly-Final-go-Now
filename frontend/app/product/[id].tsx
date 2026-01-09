@@ -585,7 +585,12 @@ export default function ProductDetailScreen() {
                       <View style={styles.commentUserInfo}>
                         <View style={[styles.commentAvatar, { backgroundColor: colors.primary + '20' }]}>
                           {comment.user_picture ? (
-                            <Image source={{ uri: comment.user_picture }} style={styles.avatarImage} />
+                            <Image 
+                              source={{ uri: comment.user_picture }} 
+                              style={styles.avatarImage}
+                              contentFit="cover"
+                              cachePolicy="disk"
+                            />
                           ) : (
                             <Ionicons name="person" size={18} color={colors.primary} />
                           )}
