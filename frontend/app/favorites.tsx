@@ -207,7 +207,9 @@ export default function FavoritesScreen() {
                 <Image
                   source={{ uri: item.product.image_url }}
                   style={styles.productImage}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  cachePolicy="disk"
+                  transition={200}
                 />
               ) : (
                 <Ionicons name="cube-outline" size={40} color={colors.textSecondary} />
