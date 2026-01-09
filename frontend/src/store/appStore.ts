@@ -216,6 +216,7 @@ interface AppState {
   setUserRole: (role: UserRole) => void;
   setHasHydrated: (hydrated: boolean) => void;
   logout: () => void;
+  validateSession: () => Promise<boolean>; // التحقق من صلاحية الجلسة
   setTheme: (theme: 'light' | 'dark') => void;
   setLanguage: (language: 'en' | 'ar') => void;
   setColorMood: (mood: ColorMood) => void;
