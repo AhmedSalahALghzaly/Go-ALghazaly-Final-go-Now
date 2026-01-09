@@ -132,35 +132,41 @@ export const DynamicOfferSlider: React.FC<DynamicOfferSliderProps> = ({
   // Pulse animation for icon
   useEffect(() => {
     if (hideIcon) return;
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.12, duration: 700, useNativeDriver: true }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
       ])
-    ).start();
-  }, [hideIcon]);
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [hideIcon, pulseAnim]);
 
   // Glow animation
   useEffect(() => {
     if (hideIcon) return;
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(glowAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
         Animated.timing(glowAnim, { toValue: 0, duration: 1500, useNativeDriver: true }),
       ])
-    ).start();
-  }, [hideIcon]);
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [hideIcon, glowAnim]);
 
   // Rotation animation for icon
   useEffect(() => {
     if (hideIcon) return;
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(rotateAnim, { toValue: 1, duration: 4000, useNativeDriver: true }),
         Animated.timing(rotateAnim, { toValue: 0, duration: 4000, useNativeDriver: true }),
       ])
-    ).start();
-  }, [hideIcon]);
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [hideIcon, rotateAnim]);
 
   const handleScroll = (event: any) => {
     const x = event.nativeEvent.contentOffset.x;
